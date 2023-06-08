@@ -1,8 +1,8 @@
 import streamlit as st
 from css.metrics import metrics
 from polars import read_parquet, col
-# import geopandas as gpd
 from graphs.across_time import gen_graphs
+# import geopandas as gpd
 # from streamlit_folium import st_folium
 # from graphs.maps.gen_maps import gen_maps
 
