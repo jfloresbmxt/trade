@@ -2,9 +2,9 @@ import streamlit as st
 from css.metrics import metrics
 from polars import read_parquet, col
 from graphs.across_time import gen_graphs
-# import geopandas as gpd
-# from streamlit_folium import st_folium
-# from graphs.maps.gen_maps import gen_maps
+import geopandas as gpd
+from streamlit_folium import st_folium
+from graphs.maps.gen_maps import gen_maps
 
 st.title('Información Estatal')
 
@@ -38,12 +38,12 @@ def get_states_data(state):
 
     return df
 
-# @st.cache_data
-# def plot_map(state):
-#     s = gpd.read_parquet("data/map_info/state_" + state + ".parquet")
-#     map_info = gpd.read_parquet("data/map_info/cp_" + state + ".parquet")
+@st.cache_data
+def plot_map(state):
+    s = gpd.read_parquet("data/map_info/state_" + state + ".parquet")
+    map_info = gpd.read_parquet("data/map_info/cp_" + state + ".parquet")
     
-#     return [s, map_info]
+    return [s, map_info]
 
 
 estados = get_list()
@@ -75,11 +75,11 @@ option = st.selectbox(
     'Selecciona la variable',
     ('Exportaciones', 'Numero_empresas'))
 
-# s, map_info = plot_map(opcion)
+s, map_info = plot_map(opcion)
 
-# m = gen_maps(s, map_info)
+m = gen_maps(s, map_info)
 
-# st_data = st_folium(m, width=500)
+st_data = st_folium(m, width=500)
 
 def exp_section():
     fig = gen_graphs(df_time, option)
@@ -105,5 +105,3 @@ def exp_section():
         st.table(df)
 
 exp_section()
-# st.subheader("10 productos mas vendidos")
-# st.dataframe(data)

@@ -7,4 +7,5 @@ data/shapefiles
 data/test
 data/shp
 data/zip_code_mx.txt
+data/map_info
 test_gen_shp.ipynb
