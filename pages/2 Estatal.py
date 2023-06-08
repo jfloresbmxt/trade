@@ -8,6 +8,7 @@ from graphs.maps.gen_maps import gen_maps
 
 st.title('Información Estatal')
 
+@st.cache_data
 def statistics(df):
     a = df["fraccion"].n_unique()
     b = df["subsector"].n_unique()
@@ -25,7 +26,7 @@ def statistics(df):
     
     return [a, b, c, d, f, g, df]
 
-@st.cache_data()
+@st.cache_data
 def get_list():
     df = read_parquet("data/estados/lista_estados.parquet")
     df = df.to_series().to_list()

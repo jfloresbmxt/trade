@@ -8,3 +8,4 @@ data/test
 data/shp
 data/zip_code_mx.txt
 test_gen_shp.ipynb
+pipeline.ipynb
