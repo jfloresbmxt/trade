@@ -8,7 +8,7 @@ st.set_page_config(
 # Esconder Menu por default
 # hide_menu()
 
-st.title('Tablero indicadores económicos de Turismo')
+st.title('Oportunidades nearshoring')
 
 st.header("Objetivo")
 st.markdown('''Con el objetivo de identificar los productos donde México tiene una mayor 
