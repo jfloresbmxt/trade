@@ -3,10 +3,10 @@ import plotly.express as px
 def bar_sectors_exp(df):
     df = df.sort("val_usd", descending = True)
 
-    fig = px.bar(df, x = 1, y = 2,
+    fig = px.bar(df, x = df['subsector'], y = df["val_usd"],
              title = "Exportaciones por subsector", 
              template = 'plotly_white',
-             hover_name = 0,
+             hover_name = df['Título'],
              custom_data= [0],
              color_discrete_sequence = ["#D4C19C"]
              )
@@ -38,10 +38,10 @@ def bar_sectors_exp(df):
 def bar_sectors_n(df):
     df = df.sort("rfc_e", descending = True)
 
-    fig = px.bar(df, x = 1, y = 3,
+    fig = px.bar(df, x = df['subsector'], y = df["rfc_e"],
              title = "Exportaciones por subsector", 
              template = 'plotly_white',
-             hover_name = 0,
+             hover_name = df['Título'],
              custom_data= [0],
              color_discrete_sequence = ["#D4C19C"]
              )
@@ -74,7 +74,7 @@ def gen_table(df):
     df = df.to_pandas()
     df["Subsector"] = df["subsector"].str.cat(df["Título"], sep = "-")
     df["Subsector"] = df["Subsector"].apply(lambda x: x.replace("T", ""))
-    df = df.drop(columns={"Título", "subsector"})
+    # df = df.drop(columns={"Título", "subsector"})
     df = df.rename(columns = {"rfc_e": "Empresas",
                               "val_usd": "Exportaciones"})
     df = df[["Subsector", "Exportaciones", "Empresas"]]
