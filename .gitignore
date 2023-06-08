@@ -1,0 +1,11 @@
+data/master_master.parquet
+test.ipynb
+test_state.ipynb
+test_state_maps.ipynb
+subsector.xlsx
+data/shapefiles
+data/test
+data/shp
+data/zip_code_mx.txt
+data/estados
+test_gen_shp.ipynb
