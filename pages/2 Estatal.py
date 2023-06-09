@@ -35,7 +35,9 @@ def get_list():
 
 @st.cache_data
 def get_states_data(state):
-    stats = read_parquet("data/summary/stats_" + state + ".parquet")
+    stats = read_parquet("data/summary/stats.parquet")
+    stats = stats.filter(col("estado") == state)
+
     a = format(int(stats["products"][0]), ",d")
     b = format(int(stats["sectors"][0]), ",d")
     c = format(int(stats["companies"][0]), ",d")
@@ -43,7 +45,8 @@ def get_states_data(state):
     e = format(int(stats["exp_prom"][0]), ",d")
     f = format(int(stats["comp_prom"][0]), ",d")
 
-    time = read_parquet("data/summary/time_" + state + ".parquet")
+    time = read_parquet("data/summary/time.parquet")
+    time = time.filter(col("estado") == state)
 
     return [a,b,c,d,e,f, time]
 
