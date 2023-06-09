@@ -2,11 +2,12 @@ import streamlit as st
 from css.metrics import metrics
 from polars import read_parquet, col
 from graphs.across_time import gen_graphs
-# import geopandas as gpd
-# from streamlit_folium import st_folium
-# from graphs.maps.gen_maps import gen_maps
+import geopandas as gpd
+from streamlit_folium import st_folium
+from graphs.maps.gen_maps import gen_maps
 
 st.title('Información Estatal')
+
 
 def statistics(df):
     a = df["fraccion"].n_unique()
@@ -25,7 +26,7 @@ def statistics(df):
     
     return [a, b, c, d, f, g, df]
 
-@st.cache_data()
+@st.cache_data
 def get_list():
     df = read_parquet("data/estados/lista_estados.parquet")
     df = df.to_series().to_list()
@@ -34,31 +35,39 @@ def get_list():
 
 @st.cache_data
 def get_states_data(state):
-    df = read_parquet("data/estados/" + state + ".parquet")
+    stats = read_parquet("data/summary/stats.parquet")
+    stats = stats.filter(col("estado") == state)
 
-    return df
+    a = format(int(stats["products"][0]), ",d")
+    b = format(int(stats["sectors"][0]), ",d")
+    c = format(int(stats["companies"][0]), ",d")
+    d = format(int(stats["exp_tot"][0]), ",d")
+    e = format(int(stats["exp_prom"][0]), ",d")
+    f = format(int(stats["comp_prom"][0]), ",d")
 
-# @st.cache_data
-# def plot_map(state):
-#     s = gpd.read_parquet("data/map_info/state_" + state + ".parquet")
-#     map_info = gpd.read_parquet("data/map_info/cp_" + state + ".parquet")
+    time = read_parquet("data/summary/time.parquet")
+    time = time.filter(col("estado") == state)
+
+    return [a,b,c,d,e,f, time]
+
+@st.cache_data
+def plot_map(state):
+    s = gpd.read_parquet("data/map_info/state_" + state + ".parquet")
+    map_info = gpd.read_parquet("data/map_info/cp_" + state + ".parquet")
     
-#     return [s, map_info]
+    return [s, map_info]
 
 
 estados = get_list()
 
-opcion = st.sidebar.selectbox(
+estado = st.sidebar.selectbox(
     "Selecciona estado",
     estados
 )
 
+a, b, c, d, e, f, time = get_states_data(estado)
 
-
-data = get_states_data(opcion)
-a, b, c, d, f, g, df_time = statistics(data)
-
-st.subheader(f"Informacion de {opcion}")
+st.subheader(f"Informacion de {estado}")
 col1, col2, col3 = st.columns(3)
 col1.markdown(metrics("Productos", a, "fas fa-globe-americas"), unsafe_allow_html=True)
 col2.markdown(metrics("Sectores", b, "fas fa-cogs"), unsafe_allow_html=True)
@@ -66,8 +75,8 @@ col3.markdown(metrics("Empresas Totales", c, "fas fa-city"), unsafe_allow_html=T
 
 col1, col2, col3 = st.columns(3)
 col1.markdown(metrics("Exportaciones totales", d + "M", "fas fa-globe-americas"), unsafe_allow_html=True)
-col2.markdown(metrics("Exportaciones promedio", f + " M", "fas fa-globe-americas"), unsafe_allow_html=True)
-col3.markdown(metrics("Empresas mensuales promedio", g, "fas fa-globe-americas"), unsafe_allow_html=True)
+col2.markdown(metrics("Exportaciones promedio", e + " M", "fas fa-globe-americas"), unsafe_allow_html=True)
+col3.markdown(metrics("Empresas mensuales promedio", f, "fas fa-globe-americas"), unsafe_allow_html=True)
 
 
 st.header("Comportamiento Exportaciones")
@@ -75,15 +84,9 @@ option = st.selectbox(
     'Selecciona la variable',
     ('Exportaciones', 'Numero_empresas'))
 
-# s, map_info = plot_map(opcion)
-
-# m = gen_maps(s, map_info)
-
-# st_data = st_folium(m, width=500)
-
 def exp_section():
-    fig = gen_graphs(df_time, option)
-    df = gen_graphs(df_time, "tabla")
+    fig = gen_graphs(time, option)
+    df = gen_graphs(time, "tabla")
     tab1, tab2 = st.tabs(["Gráfica", "Datos"])
 
     with tab1:
@@ -105,5 +108,11 @@ def exp_section():
         st.table(df)
 
 exp_section()
-# st.subheader("10 productos mas vendidos")
-# st.dataframe(data)
+
+st.subheader("Concentración de empresas")
+
+s, map_info = plot_map(estado)
+
+m = gen_maps(s, map_info)
+
+st_data = st_folium(m, width=500)
