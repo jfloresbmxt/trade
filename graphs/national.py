@@ -24,3 +24,48 @@ def treemap(df, n):
     fig.update_traces(hovertemplate=template)
 
     return fig
+
+def gen_table(df):
+    df = df.to_pandas()
+    df = df.rename(columns = {
+        "Título": "Subsector",
+        "desc_partida": "Partida",
+        "descripcion": "Descripcion producto",
+        "val_usd": "Exportaciones"})
+
+    return df
+
+def table_style(df):
+    df = gen_table(df)
+    # style
+    th_props = [
+    ('font-size', '16px'),
+    ('text-align', 'center'),
+    ('font-weight', 'bold'),
+    ('color', '#ffffff'),
+    ('background-color', '#B38E5D')
+    ]
+
+    td_props = [
+    ('font-size', '14px')
+    ]
+
+    styles = [
+    dict(selector="th", props=th_props),
+    dict(selector="td", props=td_props)
+    ]
+
+    # table
+    df = (df.style
+        .format(precision=0, thousands=",")
+        .set_properties(**{'text-align': 'left'})
+        .set_table_styles(styles))
+    
+    return df
+
+
+def gen_treemap(df, n, option):
+    if option == "grafica":
+        return treemap(df, n)
+    if option == "tabla":
+        return table_style(df)
