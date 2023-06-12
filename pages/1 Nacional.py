@@ -130,9 +130,11 @@ st.header("Informacion estatal")
 states_section(option)
 
 st.header("Top de productos exportados")
+
 n = st.radio(
-    "Productos a ver",
-    (10, 20, 30))
+    "Productos a ver", 
+    (10, 20, 30, 40, 50), horizontal=True
+    )
 
 def treemap_section():
     fig = gen_treemap(df_group, n, "grafica")
