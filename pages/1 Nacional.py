@@ -4,6 +4,7 @@ from polars import read_parquet, col
 from graphs.across_time import gen_graphs
 from graphs.sector import gen_sectors_graphs
 from graphs.states import gen_states_graphs
+from graphs.national import treemap
 
 
 @st.cache_data
@@ -21,10 +22,12 @@ def get_national_data():
     df_sectors = read_parquet("data/sectors.parquet")
     df_states = read_parquet("data/estados.parquet")
 
-    return [a,b,c, df_time, df_sectors, 
-            df_states, emp_prom, sum_exp, exp_prom]
+    df_group = read_parquet("data/group/nacional.parquet")
 
-a,b,c, df_time, df_sectors, df_states, emp_prom, sum_exp, exp_prom = get_national_data()
+    return [a,b,c, df_time, df_sectors, df_states, 
+            emp_prom, sum_exp, exp_prom, df_group]
+
+a,b,c, df_time, df_sectors, df_states, emp_prom, sum_exp, exp_prom, df_group = get_national_data()
 
 # Title
 st.title("Información Nacional")
@@ -125,3 +128,11 @@ def states_section(option):
 
 st.header("Informacion estatal")
 states_section(option)
+
+st.header("Top de productos exportados")
+genre = st.radio(
+    "Productos a ver",
+    (10, 20, 30))
+
+fig = treemap(df_group, genre)
+st.plotly_chart(fig)
