@@ -2,6 +2,7 @@ import streamlit as st
 from css.metrics import metrics
 from polars import read_parquet, col
 from graphs.across_time import gen_graphs
+from graphs.group import gen_group
 import geopandas as gpd
 from streamlit_folium import st_folium
 from graphs.maps.gen_maps import gen_maps
@@ -47,8 +48,9 @@ def get_states_data(state):
 
     time = read_parquet("data/summary/time.parquet")
     time = time.filter(col("estado") == state)
+    df_group = read_parquet("data/group/" + state + ".parquet")
 
-    return [a,b,c,d,e,f, time]
+    return [a,b,c,d,e,f, time, df_group]
 
 @st.cache_data
 def plot_map(state):
@@ -65,7 +67,7 @@ estado = st.sidebar.selectbox(
     estados
 )
 
-a, b, c, d, e, f, time = get_states_data(estado)
+a, b, c, d, e, f, time, df_group = get_states_data(estado)
 
 st.subheader(f"Informacion de {estado}")
 col1, col2, col3 = st.columns(3)
@@ -109,6 +111,36 @@ def exp_section():
 
 exp_section()
 
+st.subheader("Top de productos exportados")
+n = st.radio("Número de productos",
+             (10, 20, 30),
+             horizontal = True)
+
+def group_section(n):
+    fig = gen_group(df_group, n, "grafica")
+    df = gen_group(df_group, n,  "tabla")
+    tab1, tab2 = st.tabs(["Gráfica", "Datos"])
+
+    with tab1:
+        # Plot!
+        st.plotly_chart(fig, use_container_width=True)
+    
+    with tab2:
+        hide_table_row_index = """
+                    <style>
+                    thead tr th:first-child {display:none}
+                    tbody th {display:none}
+                    </>
+                    """
+        
+        # Inject CSS with Markdown
+        st.markdown(hide_table_row_index, unsafe_allow_html=True)
+
+        # Table
+        st.table(df)
+
+group_section(n)
+
 st.subheader("Concentración de empresas")
 
 s, map_info = plot_map(estado)
@@ -116,3 +148,4 @@ s, map_info = plot_map(estado)
 m = gen_maps(s, map_info)
 
 st_data = st_folium(m, width=500)
+
