@@ -28,7 +28,7 @@ def statistics(df):
 
 @st.cache_data
 def get_list():
-    df = read_parquet("data/estados/lista_estados.parquet")
+    df = read_parquet("data/lista_estados.parquet")
     df = df.to_series().to_list()
 
     return df
