@@ -6,6 +6,7 @@ from graphs.group import gen_group
 import geopandas as gpd
 from streamlit_folium import st_folium
 from graphs.maps.gen_maps import gen_maps
+from secciones.estatal.detalle import detalle_empresas
 
 st.title('Información Estatal')
 
@@ -29,10 +30,10 @@ def statistics(df):
 
 @st.cache_data
 def get_list():
-    df = read_parquet("data/lista_estados.parquet")
-    df = df.to_series().to_list()
+    estados = read_parquet("data/lista_estados.parquet")
+    estados = estados.to_series().to_list()
 
-    return df
+    return estados
 
 @st.cache_data
 def get_states_data(state):
@@ -49,8 +50,16 @@ def get_states_data(state):
     time = read_parquet("data/summary/time.parquet")
     time = time.filter(col("estado") == state)
     df_group = read_parquet("data/group/" + state + ".parquet")
+    df_detail = read_parquet("data/detalle/" + state + ".parquet")
+    subsector = (
+        df_detail.select(col("Título"))
+        .unique()
+        .select(col("Título")
+        .apply(lambda x: x.replace("T",""))
+        .apply(lambda x: x.strip()))
+        ).to_series().to_list()
 
-    return [a,b,c,d,e,f, time, df_group]
+    return [a,b,c,d,e,f, time, df_group, df_detail, subsector]
 
 @st.cache_data
 def plot_map(state):
@@ -67,7 +76,7 @@ estado = st.sidebar.selectbox(
     estados
 )
 
-a, b, c, d, e, f, time, df_group = get_states_data(estado)
+a, b, c, d, e, f, time, df_group, df_detail, subsector = get_states_data(estado)
 
 st.subheader(f"Informacion de {estado}")
 col1, col2, col3 = st.columns(3)
@@ -116,6 +125,7 @@ n = st.radio("Número de productos",
              (10, 20, 30),
              horizontal = True)
 
+
 def group_section(n):
     fig = gen_group(df_group, n, "grafica")
     df = gen_group(df_group, n,  "tabla")
@@ -148,4 +158,3 @@ s, map_info = plot_map(estado)
 m = gen_maps(s, map_info)
 
 st_data = st_folium(m, width=500)
-
