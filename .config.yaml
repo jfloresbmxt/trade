@@ -1,0 +1,21 @@
+credentials:
+  usernames:
+    jflores:
+      email: jflores@bancomext.gob.mx
+      name: Alejandro Flores
+      password: $2b$12$45BCulRplmeHE8LPmQ1D6.IR.xQZM.XyWDqgWMMDENOGsyLbueDWS
+    jsmith:
+      email: jsmith@gmail.com
+      name: John Smith
+      password: $2b$12$JAtAF4ssvTN74Q5ait/r/Oiue.VkoVm2A037AgAUOyqi0gyfJ3j0C # To be replaced with hashed password
+    rbriggs:
+      email: rbriggs@gmail.com
+      name: Rebecca Briggs
+      password: def # To be replaced with hashed password
+cookie:
+  expiry_days: 1
+  key: some_signature_key # Must be string
+  name: some_cookie_name
+preauthorized:
+  emails:
+  - melsby@gmail.com
