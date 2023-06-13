@@ -4,9 +4,8 @@ from polars import read_parquet, col
 from graphs.across_time import gen_graphs
 from graphs.group import gen_group
 import geopandas as gpd
+from graphs.maps.gen_mun_map import gen_mapa_mun
 from streamlit_folium import st_folium
-from graphs.maps.gen_maps import gen_maps
-from secciones.estatal.detalle import detalle_empresas
 
 st.title('Información Estatal')
 
@@ -62,12 +61,10 @@ def get_states_data(state):
     return [a,b,c,d,e,f, time, df_group, df_detail, subsector]
 
 @st.cache_data
-def plot_map(state):
-    s = gpd.read_parquet("data/map_info/state_" + state + ".parquet")
-    map_info = gpd.read_parquet("data/map_info/cp_" + state + ".parquet")
-    
-    return [s, map_info]
+def get_data_mun(estado):
+    map_info = gpd.read_parquet("data/map_info/municipios/" + estado + ".parquet")
 
+    return map_info
 
 estados = get_list()
 
@@ -153,8 +150,8 @@ group_section(n)
 
 st.subheader("Concentración de empresas")
 
-s, map_info = plot_map(estado)
+map_info = get_data_mun(estado)
 
-m = gen_maps(s, map_info)
+m = gen_mapa_mun(map_info)
 
 st_data = st_folium(m, width=500)
